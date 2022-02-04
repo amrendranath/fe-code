@@ -37,11 +37,55 @@
           <h2>Look up for people’s name, photos and online profiles with their email address or phone number. See what you find!</h2>
         </div>
 
+        <ul class="nav nav-pills mb-3">
+          <li class="nav-item">
+            <a
+              class="nav-link active"
+              id="email-tab"
+              href="#email-content"
+              data-toggle="tab"
+              role="tab"
+              aria-controls="email-content"
+              aria-selected="true"
+              >Email</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="phone-tab"
+              href="#phone-content"
+              data-toggle="tab"
+              role="tab"
+              aria-controls="phone-content"
+              aria-selected="false"
+              >Phone</a
+            >
+          </li>
+        </ul>
         <form>
-          <div class="input-group">
-            <input class="form-control" type="text" name="email" placeholder="Enter an Email Address" />
-            <p class="error-msg">Please enter a valid email address</p>
-            <button id="btn-search" class="btn btn-form-submit text-uppercase" type="submit">Go!</button>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="email-content" role="tabpanel" aria-labelledby="email-tab">
+              <div class="input-group">
+                <input class="form-control" type="email" name="email" placeholder="Enter an Email Address" />
+                <p class="error-msg">Please enter a valid email address</p>
+                <button id="btn-email-search" class="btn btn-form-submit text-uppercase" type="submit">Go!</button>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="phone-content" role="tabpanel" aria-labelledby="phone-tab">
+              <div class="input-group">
+                <input
+                  class="form-control"
+                  type="tel"
+                  maxlength="10"
+                  name="phone"
+                  placeholder="Enter an Phone Number"
+                  pattern="[0-9]{10}"
+                />
+                <p class="error-msg">Please enter a valid phone number</p>
+                <button id="btn-phone-search" class="btn btn-form-submit text-uppercase" type="submit">Go!</button>
+              </div>
+            </div>
           </div>
           <div class="d-flex justify-content-start justify-content-md-end align-items-center mt-4">
             <img src="img/icn_lock.svg" alt="lock" />
