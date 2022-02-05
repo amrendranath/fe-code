@@ -1,4 +1,50 @@
 $(document).ready(function () {
+  const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+  const PHONE_REGEX = /^\d{10}$/;
+
+  /**
+   * Validate the email
+   * @param {string} email
+   * @returns {boolean} true | false
+   */
+  const isEmailValid = (email) => {
+    return !!email.match(EMAIL_REGEX);
+  };
+
+  /**
+   * Validate the phone number
+   * @param {string} phone
+   * @returns {boolean} true | false
+   */
+  const isPhoneValid = (phone) => {
+    return !!phone.match(PHONE_REGEX);
+  };
+
+  /**
+   * Method used tp set value in local storage with respect to the key.
+   * @param {string} key the key you wants to store in local storage
+   * @param {*} value the data you wants to store in the key
+   * @returns
+   */
+  const setItemInLocalStorage = (key, value) => localStorage.setItem(key, value);
+
+  /**
+   * Method used to retrive data
+   * @param {string} key the dat
+   * @returns {string} stringify data
+   */
+  const getItemFromLocalStorage = (key) => localStorage.getItem(key);
+
+  /**
+   * Used to clear the local storage
+   * @returns
+   */
+  const clearLocalStorage = () => localStorage.clear();
+
+  /**
+   * To show the loader on the page.
+   */
   function showLoader() {
     document.querySelector(".above-the-fold")?.classList?.add("d-none");
     document.querySelector(".features")?.classList?.add("d-none");
@@ -7,6 +53,9 @@ $(document).ready(function () {
     document.querySelector(".loading")?.classList?.add("d-flex");
   }
 
+  /**
+   * To hide the loader on the page.
+   */
   function hideLoader() {
     document.querySelector(".above-the-fold")?.classList?.remove("d-none");
     document.querySelector(".features")?.classList?.remove("d-none");
@@ -15,69 +64,60 @@ $(document).ready(function () {
     document.querySelector(".loading")?.classList?.remove("d-flex");
   }
 
+  /**
+   * Method is used to get the user.
+   * @param {string} url
+   */
+  const getUser = (url) => {
+    const proxyurl = "";
+    fetch(proxyurl + url)
+      .then((response) => response.text())
+      .then(function (contents) {
+        setItemInLocalStorage("userObject", contents);
+        hideLoader();
+        window.location.href = "result.html";
+      })
+      .catch((e) => console.log(e));
+  };
+
   $("#btn-email-search").on("click", function (e) {
     e.preventDefault();
-    localStorage.clear(); //Clears storage for next request
-    email = $('input[type="email"]').val().toLowerCase();
+    clearLocalStorage; //Clears storage for next request
+    const email = $('input[type="email"]').val().toLowerCase();
 
-    var x, y;
-    regEx = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (email.match(regEx)) {
-      x = true;
-    } else {
-      x = false;
-    }
-
-    if (x === true) {
+    if (isEmailValid(email)) {
       document.querySelector('input[type="email"]').parentNode.classList.remove("error");
-      const proxyurl = "";
       const url = "https://ltv-data-api.herokuapp.com/api/v1/records.json?email=" + email;
       showLoader();
-      fetch(proxyurl + url)
-        .then((response) => response.text())
-        .then(function (contents) {
-          localStorage.setItem("userObject", contents);
-          hideLoader();
-          window.location.href = "result.html";
-        })
-        .catch((e) => console.log(e));
-    } else if (x !== true) {
+      getUser(url);
+    } else {
       document.querySelector('input[type="email"]').parentNode.classList.add("error");
     }
   });
 
   $('input[type="email"]').keypress(function (event) {
-    email = $('input[type="email"]').val().toLowerCase();
-    regEx = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (email.match(regEx)) {
+    const email = $('input[type="email"]').val().toLowerCase();
+    const keycode = event.keyCode ? event.keyCode : event.which;
+    let x;
+    if (isEmailValid(email)) {
       x = true;
       document.querySelector('input[type="email"]').parentNode.classList.remove("error");
     } else {
       x = false;
     }
-    keycode = event.keyCode ? event.keyCode : event.which;
-    if (keycode == "13") {
+
+    if (keycode === 13) {
       /**
        * Makes a request to ltv API to search an specific email address.
        * If there's a response, it gets stored in the local storage and redirects to results page
        */
       event.preventDefault();
-      localStorage.clear(); //Clears storage for next request
-
-      var x, y;
+      clearLocalStorage(); //Clears storage for next request
 
       if (x === true) {
-        const proxyurl = "";
-        const url = "https://ltv-data-api.herokuapp.com/api/v1/records.json?email=" + email;
         showLoader();
-        fetch(proxyurl + url)
-          .then((response) => response.text())
-          .then(function (contents) {
-            localStorage.setItem("userObject", contents);
-            hideLoader();
-            window.location.href = "result.html";
-          })
-          .catch((e) => console.log(e));
+        const url = "https://ltv-data-api.herokuapp.com/api/v1/records.json?email=" + email;
+        getUser(url);
       } else if (x !== true) {
         document.querySelector('input[type="email"]').parentNode.classList.add("error");
       }
@@ -87,67 +127,42 @@ $(document).ready(function () {
   // Mobile
   $("#btn-phone-search").on("click", function (e) {
     e.preventDefault();
-    localStorage.clear(); //Clears storage for next request
-    phone = $('input[type="tel"]').val().toLowerCase();
+    clearLocalStorage; //Clears storage for next request
+    const phone = $('input[type="tel"]').val().toLowerCase();
 
-    var x, y;
-    regEx = /^\d{10}$/;
-    if (phone.match(regEx)) {
-      x = true;
-    } else {
-      x = false;
-    }
-
-    if (x === true) {
+    if (isPhoneValid(phone)) {
       document.querySelector('input[type="tel"]').parentNode.classList.remove("error");
-      const proxyurl = "";
-      const url = "https://ltv-data-api.herokuapp.com/api/v1/records.json?phone=" + phone;
       showLoader();
-      fetch(proxyurl + url)
-        .then((response) => response.text())
-        .then(function (contents) {
-          localStorage.setItem("userObject", contents);
-          hideLoader();
-          window.location.href = "result.html";
-        })
-        .catch((e) => console.log(e));
-    } else if (x !== true) {
+      const url = "https://ltv-data-api.herokuapp.com/api/v1/records.json?phone=" + phone;
+      getUser(url);
+    } else {
       document.querySelector('input[type="tel"]').parentNode.classList.add("error");
     }
   });
 
   $('input[type="tel"]').keypress(function (event) {
-    phone = $('input[type="tel"]').val().toLowerCase();
-    regEx = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (phone.match(regEx)) {
+    const phone = $('input[type="tel"]').val().toLowerCase();
+    let x;
+    if (isPhoneValid(phone)) {
       x = true;
       document.querySelector('input[type="tel"]').parentNode.classList.remove("error");
     } else {
       x = false;
     }
-    keycode = event.keyCode ? event.keyCode : event.which;
-    if (keycode == "13") {
+    const keycode = event.keyCode ? event.keyCode : event.which;
+
+    if (keycode === 13) {
       /**
        * Makes a request to ltv API to search an specific phone address.
        * If there's a response, it gets stored in the local storage and redirects to results page
        */
       event.preventDefault();
-      localStorage.clear(); //Clears storage for next request
-
-      var x, y;
+      clearLocalStorage(); //Clears storage for next request
 
       if (x === true) {
-        const proxyurl = "";
-        const url = "https://ltv-data-api.herokuapp.com/api/v1/records.json?phone=" + phone;
         showLoader();
-        fetch(proxyurl + url)
-          .then((response) => response.text())
-          .then(function (contents) {
-            localStorage.setItem("userObject", contents);
-            hideLoader();
-            window.location.href = "result.html";
-          })
-          .catch((e) => console.log(e));
+        const url = "https://ltv-data-api.herokuapp.com/api/v1/records.json?phone=" + phone;
+        getUser(url);
       } else if (x !== true) {
         document.querySelector('input[type="tel"]').parentNode.classList.add("error");
       }
